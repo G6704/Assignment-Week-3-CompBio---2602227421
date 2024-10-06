@@ -1,3 +1,5 @@
+import itertools
+
 def translate_dna():
     seqm = input("Input DNA = ").upper()
     print(" ")
@@ -80,30 +82,25 @@ def get_mrna_and_codon_frequency(codon_map):
         print("Error: You can only input a maximum of 3 amino acids.")
         return
 
-    # Generate the mRNA sequence from the input amino acids
-    mRNA_sequence = ""
-    for aa in input_aa:
-        if aa in amino_acid_to_codon:
-            # Just pick the first codon for simplicity to generate an mRNA sequence
-            mRNA_sequence += amino_acid_to_codon[aa][0]
-        else:
-            print(f"Error: Amino acid {aa} not found.")
-            return
+    # Generate all possible mRNA sequences by using itertools.product to get all codon combinations
+    codon_combinations = [amino_acid_to_codon[aa] for aa in input_aa if aa in amino_acid_to_codon]
+    possible_mrna_sequences = list(itertools.product(*codon_combinations))
 
-    print("mRNA = ", mRNA_sequence)
+    for mRNA_seq in possible_mrna_sequences:
+        joined_mrna_seq = "".join(mRNA_seq)
+        print("\nmRNA = ", joined_mrna_seq)
 
-    # Count the frequency of codons in the mRNA sequence
-    codon_frequency = {}
-    for i in range(0, len(mRNA_sequence), 3):
-        codon = mRNA_sequence[i:i + 3]
-        if codon in codon_frequency:
-            codon_frequency[codon] += 1
-        else:
-            codon_frequency[codon] = 1
+        # Count the frequency of codons in the mRNA sequence
+        codon_frequency = {}
+        for codon in mRNA_seq:
+            if codon in codon_frequency:
+                codon_frequency[codon] += 1
+            else:
+                codon_frequency[codon] = 1
 
-    # Print the frequency of each codon
-    for codon, freq in codon_frequency.items():
-        print(f"{codon} = {freq}")
+        # Print the frequency of each codon
+        for codon, freq in codon_frequency.items():
+            print(f"{codon} = {freq}")
 
 # Run the main function
 translate_dna()
